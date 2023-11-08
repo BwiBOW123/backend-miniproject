@@ -23,3 +23,11 @@ func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error
 	err := r.db.Where("username = ?", username).First(&user).Error
 	return &user, err
 }
+
+func (r *UserRepository) LoginUser(username, password string) (*domain.User, error) {
+	var user domain.User
+	if err := r.db.Where("username = ? AND password = ?", username, password).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

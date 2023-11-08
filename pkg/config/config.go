@@ -16,5 +16,5 @@ func LoadConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal("Error reading config file", err)
 	}
-	log.Println("Load .env success")
+
 }

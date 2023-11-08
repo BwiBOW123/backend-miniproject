@@ -5,6 +5,7 @@ import (
 	"BwiBOW123/backend-miniproject/internal/app/repository"
 	service "BwiBOW123/backend-miniproject/internal/app/services"
 	"BwiBOW123/backend-miniproject/internal/domain"
+	"BwiBOW123/backend-miniproject/logs"
 	"BwiBOW123/backend-miniproject/pkg/config"
 	"log"
 
@@ -23,16 +24,17 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
-	log.Println("Load DB success")
 	db.AutoMigrate(&domain.User{})
 
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
-	log.Println("Add Services")
+
 	r := mux.NewRouter()
 	r.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
+	r.HandleFunc("/login", userHandler.Login).Methods("POST")
 	r.HandleFunc("/users", userHandler.GetUser).Methods("GET")
+	logs.Info("Service on port: 8000")
+	http.ListenAndServe(":8000", r)
 
-	log.Fatal(http.ListenAndServe(":8000", r))
 }
