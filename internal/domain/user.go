@@ -1,48 +1,52 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Member struct {
-	ID_USER  uint      `gorm:"primaryKey" json:"id_user"`
+	gorm.Model
 	Username string    `json:"username"`
 	Password string    `json:"password"`
-	Fullname string    `json:"fullname"`
-	Email    string    `json:"email"`
+	FullName string    `json:"full_name"`
+	Email    string    `gorm:"unique" json:"email"`
 	Role     string    `json:"role"`
-	Pay_CAST float32   `json:"pay_cast"`
-	CreateAt time.Time `gorm:"autoCreateTime" json:"created_at"`
-}
-
-type Payment struct {
-	Payment_ID  uint      `gorm:"primaryKey" json:"payment_id"`
-	Amount      float64   `json:"amount"`
-	PaymentType string    `json:"payment_type"`
-	CreateAt    time.Time `gorm:"autoCreateTime" json:"created_at"`
-}
-
-type Product struct {
-	P_ID        uint      `gorm:"primaryKey" json:"p_id"`
-	P_Name      string    `json:"p_name"`
-	Description string    `gorm:"type:text" json:"description"`
-	Image       []byte    `gorm:"type:blob" json:"image"`
-	P_Price     float64   `json:"p_price"`
-	File        []byte    `gorm:"type:blob" json:"file"`
-	CategoryID  uint      `json:"category_id"`
-	CreateAt    time.Time `gorm:"autoCreateTime" json:"created_at"`
+	Payments []Payment `gorm:"foreignKey:MemberID" json:"payments,omitempty"`
 }
 
 type Category struct {
-	Category_ID uint      `gorm:"primaryKey" json:"category_id"`
-	Name        string    `json:"name"`
-	CreateAt    time.Time `gorm:"autoCreateTime" json:"created_at"`
+	ID       uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name     string    `gorm:"unique" json:"category_name"`
+	Products []Product `gorm:"foreignKey:CategoryID" json:"products,omitempty"`
+}
+
+type Product struct {
+	gorm.Model          // Includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	Name        string  `json:"product_name"`
+	Description string  `json:"description"`
+	Image       []byte  `json:"image"` // Byte slice for binary image data
+	File        []byte  `json:"file"`  // Byte slice for binary file data
+	Price       float64 `json:"price"`
+	CategoryID  uint    `json:"category_id"`
+	MemberEmail string  `gorm:"not null" json:"member_email"`
+	Member      Member  `gorm:"foreignKey:Email;references:MemberEmail" json:"member,omitempty"`
+	Cart        []Cart  `gorm:"foreignKey:ProductID" json:"cart,omitempty"`
+}
+
+type Payment struct {
+	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Amount      float64   `json:"amount"`
+	PaymentType string    `json:"payment_type"`
+	CreatedAt   time.Time `json:"created_at"`
+	MemberID    uint      `json:"member_id"`
 }
 
 type Cart struct {
-	Cart_ID   uint      `gorm:"primaryKey" json:"cart_id"`
-	Quantity  int       `json:"quantity"`
-	TotalCost float64   `json:"total_cost"`
-	ProductID uint      `json:"product_id"`
-	PaymentID uint      `json:"payment_id"`
-	UserID    uint      `json:"user_id"`
-	CreateAt  time.Time `gorm:"autoCreateTime" json:"created_at"`
+	gorm.Model         // Includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	Quantity   int     `json:"quantity"`
+	TotalCost  float64 `json:"total_cost"`
+	ProductID  uint    `json:"product_id"`
+	MemberID   uint    `json:"member_id"`
 }

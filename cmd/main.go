@@ -51,7 +51,13 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
+	productRepo := repository.NewProductRepository(db)
+	productService := service.NewProductService(productRepo)
+	productHandler := handler.NewProductHandler(productService)
+
 	r := mux.NewRouter()
+	r.HandleFunc("/products", productHandler.GetProducts).Methods("GET")
+	r.HandleFunc("/products", productHandler.CreateProduct).Methods("POST")
 	r.HandleFunc("/users", userHandler.Register).Methods("POST")
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
 	r.HandleFunc("/users", userHandler.GetUser).Methods("GET")
