@@ -32,6 +32,11 @@ func (r *UserRepository) GetUserByUsername(username string) (*domain.Member, err
 	err := r.db.Where("username = ?", username).First(&user).Error
 	return &user, err
 }
+func (r *UserRepository) GetUserByEmail(email string) (*domain.Member, error) {
+	var user domain.Member
+	err := r.db.Where("email = ?", email).First(&user).Error
+	return &user, err
+}
 
 func (r *UserRepository) Login(username, password string) (*domain.Member, error) {
 	var user domain.Member

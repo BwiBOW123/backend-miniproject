@@ -1,52 +1,76 @@
 package domain
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
+// Member table
 type Member struct {
-	gorm.Model
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	FullName string    `json:"full_name"`
-	Email    string    `gorm:"unique" json:"email"`
-	Role     string    `json:"role"`
-	Payments []Payment `gorm:"foreignKey:MemberID" json:"payments,omitempty"`
+	gorm.Model           // This includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	Username   string    `gorm:"size:255;not null;unique" json:"username"`
+	Password   string    `gorm:"size:255;not null" json:"password"`
+	FullName   string    `gorm:"size:255;not null" json:"full_name"`
+	Email      string    `gorm:"size:255;not null;unique" json:"email"`
+	PayCost    float64   `gorm:"type:decimal(10,2)" json:"pay_cost"`
+	Role       string    `gorm:"size:100;not null" json:"role"`
+	Products   []Product `gorm:"foreignKey:MemberID" json:"products"` // One-to-many relationship with Product
 }
 
-type Category struct {
-	ID       uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-	Name     string    `gorm:"unique" json:"category_name"`
-	Products []Product `gorm:"foreignKey:CategoryID" json:"products,omitempty"`
-}
-
+// Product table
 type Product struct {
-	gorm.Model          // Includes fields ID, CreatedAt, UpdatedAt, DeletedAt
-	Name        string  `json:"product_name"`
-	Description string  `json:"description"`
-	Image       []byte  `json:"image"` // Byte slice for binary image data
-	File        []byte  `json:"file"`  // Byte slice for binary file data
-	Price       float64 `json:"price"`
-	CategoryID  uint    `json:"category_id"`
-	MemberEmail string  `gorm:"not null" json:"member_email"`
-	Member      Member  `gorm:"foreignKey:Email;references:MemberEmail" json:"member,omitempty"`
-	Cart        []Cart  `gorm:"foreignKey:ProductID" json:"cart,omitempty"`
+	gorm.Model          // This includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	Name        string  `gorm:"size:255;not null" json:"name"`
+	Description string  `gorm:"type:text;not null" json:"description"`
+	Price       float64 `gorm:"type:decimal(10,2);not null" json:"price"`
+	CategoryID  int     `json:"category_id"`                        // References Category
+	MemberID    int     `json:"member_id"`                          // References Member
+	CartID      int     `json:"Cart_id"`                            // References Member
+	Images      []Image `gorm:"foreignKey:ProductID" json:"images"` // One-to-many relationship with Image
+	Files       []File  `gorm:"foreignKey:ProductID" json:"files"`  // One-to-many relationship with File
 }
 
+// Payment model
 type Payment struct {
-	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-	Amount      float64   `json:"amount"`
-	PaymentType string    `json:"payment_type"`
-	CreatedAt   time.Time `json:"created_at"`
-	MemberID    uint      `json:"member_id"`
+	gorm.Model
+	PaymentType string  `gorm:"size:100;not null" json:"payment_type"`
+	Amount      float64 `gorm:"type:decimal(10,2);not null" json:"amount"`
+	MemberID    uint    `json:"member_id"` // References Member
+	CartID      uint    `json:"cart_id"`   // References Cart
 }
 
+// Cart model
 type Cart struct {
-	gorm.Model         // Includes fields ID, CreatedAt, UpdatedAt, DeletedAt
-	Quantity   int     `json:"quantity"`
-	TotalCost  float64 `json:"total_cost"`
-	ProductID  uint    `json:"product_id"`
-	MemberID   uint    `json:"member_id"`
+	gorm.Model
+	TotalCost float64   `gorm:"type:decimal(10,2);not null" json:"total_cost"`
+	MemberID  uint      `json:"member_id"`                         // References Member
+	Payments  []Payment `gorm:"foreignKey:CartID" json:"payments"` // One-to-many relationship with Payment
+	Products  []Product `gorm:"foreignKey:CartID" json:"products"` // One-to-many relationship with Payment
+}
+
+// Category table
+type Category struct {
+	gorm.Model           // This includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	Name       string    `gorm:"size:255;not null" json:"name"`
+	Products   []Product `gorm:"foreignKey:CategoryID" json:"products"` // One-to-many relationship with Product
+}
+
+// Image table
+type Image struct {
+	gorm.Model        // This includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	ProductID  uint   `json:"product_id"` // References Product
+	Data       string `json:"data"`       // Image data
+}
+
+// File table
+type File struct {
+	gorm.Model        // This includes fields ID, CreatedAt, UpdatedAt, DeletedAt
+	ProductID  uint   `json:"product_id"` // References Product
+	Data       string `json:"data"`       // File data
+}
+
+type ProductWithImageData struct {
+	Name        string
+	Price       float64
+	Description string
+	Data        []byte // Assuming image data is stored as a byte array
 }

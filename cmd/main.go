@@ -41,11 +41,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
-	db.AutoMigrate(&domain.Member{})
-	db.AutoMigrate(&domain.Payment{})
-	db.AutoMigrate(&domain.Product{})
-	db.AutoMigrate(&domain.Category{})
-	db.AutoMigrate(&domain.Cart{})
+	db.AutoMigrate(&domain.Category{}, &domain.Image{}, &domain.File{}, &domain.Member{}, &domain.Cart{}, &domain.Payment{}, &domain.Product{})
 
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
@@ -56,13 +52,17 @@ func main() {
 	productHandler := handler.NewProductHandler(productService)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/Uploadfile", productHandler.UploadFile).Methods("POST")
+	r.HandleFunc("/Uploadimage", productHandler.UploadImage).Methods("POST")
 	r.HandleFunc("/products", productHandler.GetProducts).Methods("GET")
 	r.HandleFunc("/products", productHandler.CreateProduct).Methods("POST")
 	r.HandleFunc("/users", userHandler.Register).Methods("POST")
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
-	r.HandleFunc("/users", userHandler.GetUser).Methods("GET")
+	//r.HandleFunc("/users", userHandler.GetUser).Methods("GET")
+	r.HandleFunc("/users", userHandler.GetUserbyEmail).Methods("GET")
+	r.HandleFunc("/productimages", productHandler.GetProductwithImage).Methods("GET")
+	r.HandleFunc("/productimagesByCat", productHandler.GetProductwithImageByCat).Methods("GET")
 	logs.Info("Service on port: 8000")
 	hand := c.Handler(r)
 	http.ListenAndServe(":8000", hand)
-
 }

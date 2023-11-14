@@ -20,6 +20,9 @@ func (s *UserService) Register(user *domain.Member) error {
 func (s *UserService) GetUserByUsername(username string) (*domain.Member, error) {
 	return s.repo.GetUserByUsername(username)
 }
+func (s *UserService) GetUserByEmail(email string) (*domain.Member, error) {
+	return s.repo.GetUserByEmail(email)
+}
 
 func (s *UserService) Login(username, password string) (*domain.Member, error) {
 	return s.repo.Login(username, password)

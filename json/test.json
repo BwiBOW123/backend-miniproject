@@ -1,0 +1,30 @@
+[
+    {
+        "product_name": "Example Product",
+        "description": "Product Description",
+        "image": "base64EncodedImage",
+        "file": "base64EncodedFile",
+        "price": 100.0,
+        "category_id": 1,
+        "member_email": "example@email.com"
+      },
+      {
+        "product_name": "Example Product",
+        "description": "Product Description",
+        "image": "base64EncodedImage",
+        "file": "base64EncodedFile",
+        "price": 100.0,
+        "category_id": 1,
+        "member_email": "example@email.com"
+      },
+      {
+        "product_name": "Example Product",
+        "description": "Product Description",
+        "image": "base64EncodedImage",
+        "file": "base64EncodedFile",
+        "price": 100.0,
+        "category_id": 1,
+        "member_email": "example@email.com"
+      }
+]
+  

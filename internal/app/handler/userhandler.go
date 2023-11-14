@@ -50,6 +50,16 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	log.Println("\033[32mUsername\033[0m: " + user.Username)
 	json.NewEncoder(w).Encode(user)
 }
+func (h *UserHandler) GetUserbyEmail(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	user, err := h.service.GetUserByEmail(email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	log.Println("\033[32mUsername\033[0m: " + user.Username)
+	json.NewEncoder(w).Encode(user)
+}
 
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var credentials domain.Member
