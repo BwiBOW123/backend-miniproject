@@ -35,12 +35,29 @@ func (r *ProductRepository) GetProduct(id string) (*domain.Product, error) {
 
 func (r *ProductRepository) GetProductwithImage() ([]domain.ProductWithImageData, error) {
 	var products []domain.ProductWithImageData
-	result := r.db.Raw("SELECT p.name,p.price,p.description, i.data FROM products p RIGHT JOIN (SELECT product_id, MAX(id) AS image_id FROM images GROUP BY product_id ) AS img ON p.id = img.product_id LEFT JOIN images i ON img.image_id = i.id;").Scan(&products)
+	result := r.db.Raw("SELECT p.id, p.name,p.price,p.description, i.data FROM products p RIGHT JOIN (SELECT product_id, MAX(id) AS image_id FROM images GROUP BY product_id ) AS img ON p.id = img.product_id LEFT JOIN images i ON img.image_id = i.id;").Scan(&products)
 	return products, result.Error
 }
 func (r *ProductRepository) GetProductwithImageByCat(cat_id string) ([]domain.ProductWithImageData, error) {
 	var products []domain.ProductWithImageData
-	result := r.db.Raw(`SELECT p.name, p.price, p.description, i.data FROM products p RIGHT JOIN (SELECT product_id, MAX(id) AS image_id FROM images GROUP BY product_id) AS img ON p.id = img.product_id LEFT JOIN images i ON img.image_id = i.id WHERE p.category_id = ?;`, cat_id).Scan(&products)
+	result := r.db.Raw(`SELECT p.id, p.name, p.price, p.description, i.data FROM products p RIGHT JOIN (SELECT product_id, MAX(id) AS image_id FROM images GROUP BY product_id) AS img ON p.id = img.product_id LEFT JOIN images i ON img.image_id = i.id WHERE p.category_id = ?;`, cat_id).Scan(&products)
+	return products, result.Error
+}
+func (r *ProductRepository) GetProductwithImageById(id string) ([]domain.ProductWithImageData, error) {
+	var products []domain.ProductWithImageData
+	result := r.db.Raw(`SELECT
+    p.id,
+    p.name,
+    p.price,
+    p.description,
+    i.data,
+	p.product_payment
+FROM
+    products p
+LEFT JOIN
+    images i ON p.id = i.product_id
+WHERE
+    p.id = ?;`, id).Scan(&products)
 	return products, result.Error
 }
 

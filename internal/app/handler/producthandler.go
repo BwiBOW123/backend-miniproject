@@ -87,6 +87,23 @@ func (p *ProductHandler) GetProductwithImageByCat(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(products)
 	logs.Info("Get Success")
 }
+func (p *ProductHandler) GetProductwithImageByid(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	id := r.URL.Query().Get("id")
+	products, err := p.service.GetProductwithImageById(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logs.Error(err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(products)
+	logs.Info("Get Success")
+}
 
 func (p *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {

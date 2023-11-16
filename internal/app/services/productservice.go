@@ -25,6 +25,9 @@ func (s *ProductService) GetProductwithImage() ([]domain.ProductWithImageData, e
 func (s *ProductService) GetProductwithImageByCat(Cat_id string) ([]domain.ProductWithImageData, error) {
 	return s.repo.GetProductwithImageByCat(Cat_id)
 }
+func (s *ProductService) GetProductwithImageById(id string) ([]domain.ProductWithImageData, error) {
+	return s.repo.GetProductwithImageById(id)
+}
 
 func (s *ProductService) CreateProduct(product *domain.Product) error {
 	return s.repo.CreateProduct(product)
