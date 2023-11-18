@@ -13,7 +13,8 @@ type Member struct {
 	Email      string    `gorm:"size:255;not null;unique" json:"email"`
 	PayCost    float64   `gorm:"type:decimal(10,2)" json:"pay_cost"`
 	Role       string    `gorm:"size:100;not null" json:"role"`
-	Products   []Product `gorm:"foreignKey:MemberID" json:"products"` // One-to-many relationship with Product
+	Card       string    `gorm:"size:255;" json:"card"`
+	Products   []Product `gorm:"foreignKey:MemberID" json:"products"`
 }
 
 // Product table
@@ -26,7 +27,7 @@ type Product struct {
 	MemberID       int     `json:"member_id"`                          // References Member
 	CartID         int     `json:"cart_id"`                            // References Member
 	UrlDownload    string  `json:"url_download"`                       // References Member
-	ProductPayment string  `json:"product_Payment"`                    // References Member
+	ProductPayment string  `json:"product_Payment"`                    // References Member                              // References Member
 	Images         []Image `gorm:"foreignKey:ProductID" json:"images"` // One-to-many relationship with Image
 	Files          []File  `gorm:"foreignKey:ProductID" json:"files"`  // One-to-many relationship with File
 }
